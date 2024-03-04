@@ -16,4 +16,15 @@ public class BookingImpl implements Booking {
             return false;
         }
     }
+
+    @Override
+    public boolean cancelBooking(int bookingNumber) {
+        if (bookingNumber == 1 || bookingNumber == 2) {
+            System.out.println("Canceling booking " + bookingNumber + ".");
+            return true;
+        } else {
+            System.out.println("Can't cancel booking " + bookingNumber + ".");
+            return false;
+        }
+    }
 }

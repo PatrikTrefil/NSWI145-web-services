@@ -4,4 +4,7 @@ package com.patriktrefil.soap;
 public interface Booking {
     @javax.jws.WebMethod
     boolean bookRoom(int roomNumber, String isoStartDate, String isoEndDate);
+
+    @javax.jws.WebMethod
+    boolean cancelBooking(int bookingNumber);
 }

@@ -1,0 +1,91 @@
+<definitions
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:tns="http://soap.patriktrefil.com/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    targetNamespace="http://soap.patriktrefil.com/">
+    <types>
+        <xs:schema>
+            <xs:schema targetNamespace="http://soap.patriktrefil.com/">
+                <xs:element name="bookRoom">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="arg0" type="xs:int" />
+                            <xs:element name="arg1" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="arg2" type="xs:string" minOccurs="0" maxOccurs="1" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="bookRoomResponse">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="return" type="xs:boolean" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="cancelBooking">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="arg0" type="xs:int" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="cancelBookingResponse">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="return" type="xs:boolean" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:schema>
+        </xs:schema>
+    </types>
+    <message name="cancelBookingMsg">
+        <part name="parameters" element="tns:cancelBooking" />
+    </message>
+    <message name="cancelBookingResponseMsg">
+        <part name="parameters" element="tns:cancelBookingResponse" />
+    </message>
+    <message name="bookRoomMsg">
+        <part name="parameters" element="tns:bookRoom" />
+    </message>
+    <message name="bookRoomResponseMsg">
+        <part name="parameters" element="tns:bookRoomResponse" />
+    </message>
+    <portType name="bookingPortType">
+        <operation name="cancelBookingOperation">
+            <input message="tns:cancelBookingMsg" />
+            <output message="tns:cancelBookingResponseMsg" />
+        </operation>
+        <operation name="bookRoomOperation">
+            <input message="tns:bookRoomMsg" />
+            <output message="tns:bookRoomResponseMsg" />
+        </operation>
+    </portType>
+    <binding name="bookingBinding" type="tns:bookingPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <operation name="cancelBookingOperation">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+        <operation name="bookRoomOperation">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+    </binding>
+    <service>
+        <port binding="tns:bookingBinding">
+            <soap:address location="http://127.0.0.1:8000/booking" />
+        </port>
+    </service>
+</definitions>

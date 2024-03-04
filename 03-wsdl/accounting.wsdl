@@ -1,0 +1,92 @@
+<definitions
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:tns="http://soap.patriktrefil.com/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    targetNamespace="http://soap.patriktrefil.com/"
+>
+    <types>
+        <xs:schema>
+            <xs:schema targetNamespace="http://soap.patriktrefil.com/">
+                <xs:element name="createInvoice">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="arg0" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="arg1" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="arg2" type="xs:float" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="createInvoiceResponse">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="return" type="xs:boolean" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="payInvoice">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="arg0" type="xs:int" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="payInvoiceResponse">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="return" type="xs:boolean" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:schema>
+        </xs:schema>
+    </types>
+    <message name="createInvoiceMsg">
+        <part name="parameters" element="tns:createInvoice" />
+    </message>
+    <message name="createInvoiceResponseMsg">
+        <part name="parameters" element="tns:createInvoiceResponse" />
+    </message>
+    <message name="payInvoiceMsg">
+        <part name="parameters" element="tns:payInvoice" />
+    </message>
+    <message name="payInvoiceResponseMsg">
+        <part name="parameters" element="tns:payInvoiceResponse" />
+    </message>
+    <portType name="accountingPortType">
+        <operation name="createInvoiceOperation">
+            <input message="tns:createInvoiceMsg" />
+            <output message="tns:createInvoiceResponseMsg" />
+        </operation>
+        <operation name="payInvoiceOperation">
+            <input message="tns:payInvoiceMsg" />
+            <output message="tns:payInvoiceResponseMsg" />
+        </operation>
+    </portType>
+    <binding name="accountingBinding" type="tns:accountingPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <operation name="createInvoiceOperation">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+        <operation name="payInvoiceOperation">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+    </binding>
+    <service>
+        <port binding="tns:accountingBinding">
+            <soap:address location="http://127.0.0.1:8000/accounting" />
+        </port>
+    </service>
+</definitions>
