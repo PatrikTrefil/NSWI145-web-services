@@ -1,0 +1,38 @@
+Intermediary node se podívá zda-li existuje hlavička currency.
+Pokud ano, očekává se, že bude obsahovat kód měny, ve které je cena vyjádřena.
+Pro ilustraci fungování je implementována podpora měny CZK.
+Pokud je měna CZK, je cena přepočítána na EUR, jelikož to je měna, kterou očekává koncový uzel.
+V případě, že dojde k přepočítání ceny, je v odpovědi přidána hlavička sourceCurrency s kódem původní měny a
+kurz, který byl použit pro přepočet.
+V případě, že taková hlavička neexistuje, je cena považována za vyjádřenou v EUR.
+
+Příklad:
+
+Požadavek:
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://soap.patriktrefil.com/">
+   <soapenv:Header>
+ 	<currency>CZK</currency>
+   </soapenv:Header>
+   <soapenv:Body>
+      <soap:createInvoice>
+         <!--Optional:-->
+         <arg0>?</arg0>
+         <!--Optional:-->
+         <arg1>?</arg1>
+         <arg2>25.27</arg2>
+      </soap:createInvoice>
+   </soapenv:Body>
+</soapenv:Envelope>
+
+Odpověď:
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+   <S:Header>
+      <sourceCurrency xmlns="http://soap.patriktrefil.com/">CZK</sourceCurrency>
+      <conversionRateToEur xmlns="http://soap.patriktrefil.com/">25.27</conversionRateToEur>
+   </S:Header>
+   <S:Body>
+      <ns2:createInvoiceResponse xmlns:ns2="http://soap.patriktrefil.com/">
+         <return>true</return>
+      </ns2:createInvoiceResponse>
+   </S:Body>
+</S:Envelope>
