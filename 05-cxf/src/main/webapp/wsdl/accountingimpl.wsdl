@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="AccountingImplService" targetNamespace="http://soap.patriktrefil.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://soap.patriktrefil.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:types>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema">
+  <import namespace="http://soap.patriktrefil.com/" schemaLocation="accountingimpl_schema1.xsd"/>
+</schema>
+  </wsdl:types>
+  <wsdl:message name="payInvoiceResponse">
+    <wsdl:part name="parameters" element="tns:payInvoiceResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createInvoice">
+    <wsdl:part name="parameters" element="tns:createInvoice">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createInvoiceResponse">
+    <wsdl:part name="parameters" element="tns:createInvoiceResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="payInvoice">
+    <wsdl:part name="parameters" element="tns:payInvoice">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="Accounting">
+    <wsdl:operation name="createInvoice">
+      <wsdl:input name="createInvoice" message="tns:createInvoice">
+    </wsdl:input>
+      <wsdl:output name="createInvoiceResponse" message="tns:createInvoiceResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="payInvoice">
+      <wsdl:input name="payInvoice" message="tns:payInvoice">
+    </wsdl:input>
+      <wsdl:output name="payInvoiceResponse" message="tns:payInvoiceResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="AccountingImplServiceSoapBinding" type="tns:Accounting">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="createInvoice">
+      <soap:operation soapAction="urn:CreateInvoice" style="document"/>
+      <wsdl:input name="createInvoice">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createInvoiceResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="payInvoice">
+      <soap:operation soapAction="urn:PayInvoice" style="document"/>
+      <wsdl:input name="payInvoice">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="payInvoiceResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="AccountingImplService">
+    <wsdl:port name="AccountingImplPort" binding="tns:AccountingImplServiceSoapBinding">
+      <soap:address location="http://localhost:8080/05-cxf/services/AccountingImplPort"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

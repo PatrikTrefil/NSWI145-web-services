@@ -1,0 +1,37 @@
+<xs:schema xmlns:tns="http://soap.patriktrefil.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" targetNamespace="http://soap.patriktrefil.com/" version="1.0">
+
+  <xs:element name="createInvoice" type="tns:createInvoice"/>
+
+  <xs:element name="createInvoiceResponse" type="tns:createInvoiceResponse"/>
+
+  <xs:element name="payInvoice" type="tns:payInvoice"/>
+
+  <xs:element name="payInvoiceResponse" type="tns:payInvoiceResponse"/>
+
+  <xs:complexType name="createInvoice">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+      <xs:element minOccurs="0" name="arg1" type="xs:string"/>
+      <xs:element name="arg2" type="xs:float"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="createInvoiceResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="payInvoice">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="payInvoiceResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
