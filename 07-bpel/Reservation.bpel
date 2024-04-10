@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<process name="Reservation"
+    targetNamespace="http://nswi145/Reservation/bpel"
+    xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+    xmlns:tns="http://nswi145/Reservation/bpel"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tnswsdl="http://nswi145/Reservation/wsdl"
+    xmlns:tnsxsd="http://nswi145/Reservation/xsd"
+    xmlns:reservation="http://tempuri.org/"
+    xmlns:services="http://soap.patriktrefil.com/"
+    queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath2.0"
+    expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath2.0">
+
+    <import location="Reservation.wsdl"
+        namespace="http://nswi145/Reservation/wsdl"
+        importType="http://schemas.xmlsoap.org/wsdl/" />
+
+    <partnerLinks>
+        <partnerLink name="ReservationPartnerLink"
+            partnerLinkType="tnswsdl:ReservationLinkType"
+            myRole="ReservationExecutorRole" />
+        <partnerLink name="EmailPartnerLink"
+            partnerLinkType="tnswsdl:EmailLinkType"
+            myRole="EmailClientRole"
+            partnerRole="EmailRole"
+        />
+        <partnerLink name="BookingPartnerLink"
+            partnerLinkType="tnswsdl:BookingLinkType"
+            myRole="BookingClientRole"
+            partnerRole="BookingRole"
+        />
+    </partnerLinks>
+
+    <variables>
+        <variable name="inputMessage" messageType="tnswsdl:ReservationInputMessage" />
+        <variable name="outputMessage" messageType="tnswsdl:ReservationOutputMessage" />
+        <variable name="emailInputMessage" messageType="services:sendEmail" />
+        <variable name="emailOutputMessage" messageType="services:sendEmailResponse" />
+        <variable name="bookRoomInputMessage" messageType="services:bookRoom" />
+        <variable name="bookRoomOutputMessage" messageType="services:bookRoomResponse" />
+        <variable name="reservationIn" type="tnsxsd:reservationIn" />
+        <variable name="willSendEmail" type="xsd:boolean" />
+    </variables>
+
+    <sequence>
+        <receive
+            name="ReceiveReservationInputs"
+            partnerLink="ReservationPartnerLink"
+            portType="tnswsdl:ReservationPortType"
+            operation="makeReservation"
+            variable="inputMessage"
+            createInstance="yes" />
+        <!-- Prepare book room message -->
+        <assign>
+            <copy>
+                <from variable="inputMessage" part="parameters" query="isoStartDate" />
+                <to variable="reservationIn" />
+            </copy>
+            <copy>
+                <from>
+                    <literal>
+                        <services:bookRoom xmlns="">
+                            <arg0></arg0>
+                            <arg1></arg1>
+                            <arg2></arg2>
+                        </services:bookRoom>
+                    </literal>
+                </from>
+                <to variable="bookRoomInputMessage" part="parameters" />
+            </copy>
+            <copy>
+                <from>$reservationIn/tnsxsd:roomNumber</from>
+                <to>
+                    $bookRoomInputMessage/parameters/services:bookRoom/arg0
+                </to>
+            </copy>
+            <copy>
+                <from>$reservationIn/tnsxsd:isoStartDate</from>
+                <to>
+                    $bookRoomInputMessage/parameters/services:bookRoom/arg1
+                </to>
+            </copy>
+            <copy>
+                <from>$reservationIn/tnsxsd:isoEndDate</from>
+                <to>
+                    $bookRoomInputMessage/parameters/services:bookRoom/arg2
+                </to>
+            </copy>
+        </assign>
+
+        <!-- Book room -->
+        <invoke
+            name="InvokeBookRoom"
+            partnerLink="BookingPartnerLink"
+            operation="bookRoom"
+            inputVariable="bookRoomInputMessage"
+            outputVariable="bookRoomOutputMessage"
+        />
+
+        <!-- Prepare email message -->
+        <assign>
+            <copy>
+                <from>
+                    <literal>
+                        <services:sendEmail xmlns="">
+                            <arg0></arg0>
+                            <arg1></arg1>
+                        </services:sendEmail>
+                    </literal>
+                </from>
+                <to variable="emailInputMessage" part="parameters" />
+            </copy>
+            <copy>
+                <from>$reservationIn/tnsxsd:email</from>
+                <to>
+                    $emailInputMessage/parameters/services:sendEmail/arg0
+                </to>
+            </copy>
+            <copy>
+                <from>concat("Confirmation of reservation from ",
+                    $reservationIn/tnsxsd:isoStartDate, " to ",
+                    $reservationIn/tnsxsd:isoEndDate)</from>
+                <to>
+                    $emailInputMessage/parameters/services:sendEmail/arg1
+                </to>
+            </copy>
+        </assign>
+
+        <!-- Send email if condition is satisfied -->
+        <assign>
+            <copy>
+                <from>
+                    $bookRoomOutputMessage/parameters/services:bookRoomResponse/return='true'
+                </from>
+                <to>$willSendEmail</to>
+            </copy>
+        </assign>
+        <if>
+            <condition>$willSendEmail</condition>
+            <invoke
+                name="InvokeEmailNotification"
+                partnerLink="EmailPartnerLink"
+                operation="sendEmail"
+                inputVariable="emailInputMessage"
+                outputVariable="emailOutputMessage"
+            />
+        </if>
+
+        <!-- Start preparing output message -->
+        <assign>
+            <copy>
+                <from>
+                    <literal>
+                        <tnsxsd:reservationOut xmlns="">
+                            <tnsxsd:bookRoomResult></tnsxsd:bookRoomResult>
+                            <tnsxsd:confirmationEmailResult></tnsxsd:confirmationEmailResult>
+                        </tnsxsd:reservationOut>
+                    </literal>
+                </from>
+                <to variable="outputMessage" part="parameters" />
+            </copy>
+            <copy>
+                <from>$bookRoomOutputMessage/parameters/services:bookRoomResponse/return</from>
+                <to>$outputMessage/parameters/tnsxsd:reservationOut/tnsxsd:bookRoomResult</to>
+            </copy>
+        </assign>
+
+        <!-- Set email operation result -->
+        <if>
+            <condition>$willSendEmail</condition>
+            <assign>
+                <copy>
+                    <from>$emailOutputMessage/parameters/services:sendEmailResponse/return</from>
+                    <to>
+                        $outputMessage/parameters/tnsxsd:reservationOut/tnsxsd:confirmationEmailResult</to>
+                </copy>
+            </assign>
+            <else>
+                <assign>
+                    <copy>
+                        <from>
+                            <literal>null</literal>
+                        </from>
+                        <to>
+                            $outputMessage/parameters/tnsxsd:reservationOut/tnsxsd:confirmationEmailResult</to>
+                    </copy>
+                </assign>
+            </else>
+        </if>
+
+        <reply name="ReplyReservationOutputs"
+            partnerLink="ReservationPartnerLink"
+            portType="tnswsdl:ReservationPortType"
+            operation="makeReservation"
+            variable="outputMessage" />
+    </sequence>
+
+</process>

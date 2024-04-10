@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:tns="http://nswi145/Reservation/wsdl"
+    xmlns:tnsxsd="http://nswi145/Reservation/xsd"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:calc="http://tempuri.org/"
+    xmlns:services="http://soap.patriktrefil.com/"
+    targetNamespace="http://nswi145/Reservation/wsdl">
+    <wsdl:import location="accounting.wsdl"
+        namespace="http://tempuri.org/" />
+    <wsdl:import location="booking.wsdl"
+        namespace="http://tempuri.org/" />
+    <wsdl:import location="email.wsdl"
+        namespace="http://tempuri.org/" />
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://nswi145/Reservation/xsd">
+            <xsd:complexType name="reservationIn">
+                <xsd:element name="email" type="xsd:string" />
+                <xsd:element name="roomNumber" type="xsd:integer" />
+                <xsd:element name="isoStartDate" type="xsd:string" />
+                <xsd:element name="isoEndDate" type="xsd:string" />
+            </xsd:complexType>
+            <xsd:complexType name="reservationOut">
+                <xsd:element name="bookRoomResult" type="xsd:string" />
+                <xsd:element name="confirmationEmailResult" type="xsd:string" />
+            </xsd:complexType>
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="ReservationInputMessage">
+        <wsdl:part name="parameters" element="tnsxsd:reservationIn" />
+    </wsdl:message>
+    <wsdl:message name="ReservationOutputMessage">
+        <wsdl:part name="parameters" element="tnsxsd:reservationOut" />
+    </wsdl:message>
+
+    <wsdl:portType name="ReservationPortType">
+        <wsdl:operation name="makeReservation">
+            <wsdl:input name="ReservationIn" message="tns:ReservationInputMessage" />
+            <wsdl:output name="ReservationOut" message="tns:ReservationOutputMessage" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:portType name="EmailResponsePortType">
+        <wsdl:operation name="sendEmail">
+            <wsdl:input name="EmailIn" message="services:sendEmail" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:portType name="BookingResponsePortType">
+        <wsdl:operation name="bookRoomOperation">
+            <wsdl:input name="BookRoomIn" message="services:bookRoom" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="ReservationSOAPBinding" type="tns:ReservationPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="makeReservation">
+            <soap:operation soapAction="urn:makeReservation" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:binding name="EmailSOAPBinding" type="tns:EmailResponsePortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="sendEmail">
+            <soap:operation soapAction="urn:sendEmailResponseOperation" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:binding name="BookingSOAPBinding" type="tns:BookingResponsePortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="bookRoomOperation">
+            <soap:operation soapAction="urn:bookRoomResponseOperation" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="ReservationService">
+        <wsdl:port name="ReservationPort" binding="tns:ReservationSOAPBinding">
+            <soap:address location="http://localhost:8080/ode/processes/Reservation" />
+        </wsdl:port>
+        <wsdl:port name="EmailPort" binding="tns:EmailSOAPBinding">
+            <soap:address location="http://localhost:8080/ode/processes/ReservationEmail" />
+        </wsdl:port>
+        <wsdl:port name="BookingPort" binding="tns:BookingSOAPBinding">
+            <soap:address location="http://localhost:8080/ode/processes/ReservationBooking" />
+        </wsdl:port>
+    </wsdl:service>
+
+    <plnk:partnerLinkType name="ReservationLinkType">
+        <plnk:role name="ReservationExecutorRole" portType="tns:ReservationPortType" />
+    </plnk:partnerLinkType>
+    <plnk:partnerLinkType name="EmailLinkType">
+        <plnk:role name="EmailRole" portType="services:Email" />
+        <plnk:role name="EmailClientRole" portType="tns:EmailResponsePortType" />
+    </plnk:partnerLinkType>
+    <plnk:partnerLinkType name="BookingLinkType">
+        <plnk:role name="BookingRole" portType="services:Booking" />
+        <plnk:role name="BookingClientRole" portType="tns:BookingResponsePortType" />
+    </plnk:partnerLinkType>
+
+</wsdl:definitions>
