@@ -1,0 +1,118 @@
+openapi: 3.0.3
+info:
+  title: Invoice management service
+  description: Service for managing invoices
+  contact:
+    email: patrik.trefil@gmail.com
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/rest/rest/
+tags:
+  - name: Invoices
+
+paths:
+  /invoice:
+    get:
+      tags:
+        - Invoices
+      summary: Get all invoices
+      operationId: getInvoices
+      responses:
+        '200':
+          description: List of all invoices in the system
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invoice'
+            application/xml:
+              schema:
+                type: array
+                xml:
+                  name: invoices
+                  wrapped: true
+                items:
+                  $ref: '#/components/schemas/Invoice'
+                
+  /invoice/{invoiceId}:
+    parameters:
+      - name: invoiceId
+        in: path
+        description: Invoice ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+    put:
+      tags:
+        - Invoices
+      summary: Update an existing invoice
+      description: Update an existing invoice by Id
+      operationId: updateInvoice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invoice'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Invoice'
+        required: true
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied (i.e. not an integer)
+        '404':
+          description: Invoice to update was not found
+    post:
+      tags:
+          - Invoices
+      summary: Add a new invoice
+      description: Add a new invoice to the system
+      operationId: postInvoice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invoice'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Invoice'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid input
+        '409':
+          description: Invoice with given ID already exists
+    
+    delete:
+      tags:
+          - Invoices
+      summary: Deletes an invoice
+      operationId: deleteInvoice
+      responses:
+        '204':
+          description: Successfully deleted invoice with given ID
+        '400':
+          description: Invalid invoice ID given
+
+  
+components:
+  schemas:
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        amountInEur:
+          type: number
+          format: float
+          example: 10.1
+      xml:
+        name: invoice
