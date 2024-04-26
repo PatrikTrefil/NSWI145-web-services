@@ -12,13 +12,18 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import jakarta.xml.bind.JAXBElement;
 
 @Path("/invoice")
 public class InvoiceResource {
 	private static Map<Integer, Invoice> invoices = new HashMap<Integer, Invoice>();
+
+	@Context
+	UriInfo uriInfo;
 
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -29,16 +34,26 @@ public class InvoiceResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_XML)
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Response postInvoice(JAXBElement<Invoice> invoiceElement) {
+	@Path("{invoiceId}")
+	public Response postInvoice(
+		@PathParam("invoiceId") String invoiceId,
+		JAXBElement<Invoice> invoiceElement
+		) {
 		final var invoice = invoiceElement.getValue();
+		int parsedInvoiceId;
+		try {
+			parsedInvoiceId = Integer.valueOf(invoiceId);
+		} catch (Exception e) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		}
 
-		if (invoices.containsKey(invoice.getId())) {
+		if (parsedInvoiceId != invoice.getId() || invoices.containsKey(invoice.getId())) {
 			return Response.status(Response.Status.CONFLICT).build();
 		}
 
 		invoices.put(invoice.getId(), invoice);
 
-		return Response.status(Response.Status.NO_CONTENT).build();
+		return Response.created(uriInfo.getAbsolutePath()).build();
 	}
 
 	@PUT
