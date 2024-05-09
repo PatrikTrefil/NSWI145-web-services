@@ -1,10 +1,10 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix ex: <http://example.com/invoice/> .
+@prefix exInvoice: <http://example.com/invoice/> .
 @prefix schema: <https://schema.org/> .
 
-ex:1 a schema:Invoice ;
+exInvoice:1 a schema:Invoice ;
     schema:price "200.0"^^xsd:decimal ;
     schema:priceCurrency "EUR" .
-ex:2 a schema:Invoice ;
+exInvoice:2 a schema:Invoice ;
     schema:price "100.0"^^xsd:decimal ;
     schema:priceCurrency "EUR" .
