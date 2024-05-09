@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<invoices>
+    <invoice>
+        <amountInEur>200.0</amountInEur>
+        <id>1</id>
+    </invoice>
+    <invoice>
+        <amountInEur>100.0</amountInEur>
+        <id>2</id>
+    </invoice>
+</invoices>

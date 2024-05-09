@@ -1,0 +1,14 @@
+@prefix ex: <http://example.com/> .
+@prefix schema: <https://schema.org/> .
+
+ex:itemOrdered a rdfs:Property ;
+    rdfs:label "Item ordered"@en ;
+    rdfs:domain schema:Invoice ;
+    rdfs:range schema:LodgingReservation .
+
+# I can't think of any other classes/properties that are not covered by existing vocabularies
+# So, I am going to create a custom definition of the Person class
+
+ex:Person a rdfs:Class ;
+    rdfs:label "Person"@en ;
+    rdfs:comment "a human being regarded as an individual"@en .

@@ -1,0 +1,31 @@
+{
+    "@context": {
+        "@base": "http://example.com/invoice/",
+        "id": "@id",
+        "schema": "https://schema.org/",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "ex": "http://example.org/vocabulary/",
+        "type": "@type",
+        "price": {
+            "@id": "schema:price",
+            "@type": "xsd:decimal"
+        },
+        "priceCurrency": "schema:priceCurrency",
+        "Invoice type": "schema:Invoice",
+        "invoices": "@graph"
+    },
+    "invoices": [
+        {
+            "id": "1",
+            "type": "Invoice type",
+            "price": "200.0",
+            "priceCurrency": "EUR"
+        },
+        {
+            "id": "2",
+            "type": "Invoice type",
+            "price": "100.0",
+            "priceCurrency": "EUR"
+        }
+    ]
+}
